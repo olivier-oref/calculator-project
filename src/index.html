@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6750A4">
+    <title>Material Calculator</title>
+    
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    
+    <!-- Google Fonts - Roboto -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator">
+        <div class="display">
+            <div class="display-text">0</div>
+        </div>
+        <div class="buttons">
+            <!-- Row 1: Clear and Delete -->
+            <button class="button button-clear" data-action="clear">AC</button>
+            <button class="button button-delete" data-action="delete">DEL</button>
+            <div class="empty-space"></div>
+            <div class="empty-space"></div>
+            
+            <!-- Row 2 -->
+            <button class="button button-number" data-action="number" data-number="7">7</button>
+            <button class="button button-number" data-action="number" data-number="8">8</button>
+            <button class="button button-number" data-action="number" data-number="9">9</button>
+            <button class="button button-operator" data-action="operator" data-operator="÷">÷</button>
+            
+            <!-- Row 3 -->
+            <button class="button button-number" data-action="number" data-number="4">4</button>
+            <button class="button button-number" data-action="number" data-number="5">5</button>
+            <button class="button button-number" data-action="number" data-number="6">6</button>
+            <button class="button button-operator" data-action="operator" data-operator="×">×</button>
+            
+            <!-- Row 4 -->
+            <button class="button button-number" data-action="number" data-number="1">1</button>
+            <button class="button button-number" data-action="number" data-number="2">2</button>
+            <button class="button button-number" data-action="number" data-number="3">3</button>
+            <button class="button button-operator" data-action="operator" data-operator="-">−</button>
+            
+            <!-- Row 5 -->
+            <button class="button button-number button-zero" data-action="number" data-number="0">0</button>
+            <button class="button button-decimal" data-action="decimal">.</button>
+            <button class="button button-equals" data-action="equals">=</button>
+            <button class="button button-operator" data-action="operator" data-operator="+">+</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
