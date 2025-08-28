@@ -12,7 +12,7 @@ function updateDisplay() {
     display.textContent = calculator.displayValue;
 }
 
-// Handle digit input
+// Handle digit input with overflow protection
 function inputDigit(digit) {
     const { displayValue, waitingForSecondOperand } = calculator;
 
@@ -20,7 +20,16 @@ function inputDigit(digit) {
         calculator.displayValue = digit;
         calculator.waitingForSecondOperand = false;
     } else {
-        calculator.displayValue = displayValue === '0' ? digit : displayValue + digit;
+        // Remove commas for digit counting and processing
+        const rawValue = displayValue.replace(/,/g, '');
+        
+        // Limit display to 12 digits (excluding decimal point and minus sign)
+        const currentDigits = rawValue.replace(/[^0-9]/g, '').length;
+        if (currentDigits >= 12) {
+            return; // Don't add more digits
+        }
+        
+        calculator.displayValue = rawValue === '0' ? digit : rawValue + digit;
     }
 }
 
@@ -29,8 +38,11 @@ function inputDecimal(dot) {
     if (calculator.waitingForSecondOperand === true) {
         calculator.displayValue = '0.';
         calculator.waitingForSecondOperand = false;
-    } else if (calculator.displayValue.indexOf(dot) === -1) {
-        calculator.displayValue += dot;
+    } else {
+        const rawValue = calculator.displayValue.replace(/,/g, '');
+        if (rawValue.indexOf(dot) === -1) {
+            calculator.displayValue = rawValue + dot;
+        }
     }
 }
 
@@ -45,9 +57,10 @@ function clear() {
 // Delete last digit (DEL button)
 function deleteLast() {
     const { displayValue } = calculator;
+    const rawValue = displayValue.replace(/,/g, '');
     
-    if (displayValue.length > 1) {
-        calculator.displayValue = displayValue.slice(0, -1);
+    if (rawValue.length > 1) {
+        calculator.displayValue = rawValue.slice(0, -1);
     } else {
         calculator.displayValue = '0';
     }
@@ -75,7 +88,8 @@ function calculate(firstOperand, secondOperand, operator) {
 // Handle operator input
 function handleOperator(nextOperator) {
     const { firstOperand, displayValue, operator } = calculator;
-    const inputValue = parseFloat(displayValue);
+    const rawValue = displayValue.replace(/,/g, '');
+    const inputValue = parseFloat(rawValue);
 
     // Handle consecutive operators
     if (firstOperand === null && !isNaN(inputValue)) {
@@ -102,7 +116,8 @@ function handleOperator(nextOperator) {
 // Handle equals button
 function handleEquals() {
     const { firstOperand, displayValue, operator } = calculator;
-    const inputValue = parseFloat(displayValue);
+    const rawValue = displayValue.replace(/,/g, '');
+    const inputValue = parseFloat(rawValue);
 
     if (firstOperand === null || operator === null) {
         return;
@@ -164,20 +179,47 @@ function animateDisplayChange(newValue) {
     }, 50);
 }
 
-// Enhanced update display with animations
+// Format number with commas and scientific notation
+function formatDisplayValue(value) {
+    if (value === 'Error' || value === '0') return value;
+    
+    const num = parseFloat(value);
+    if (isNaN(num)) return value;
+    
+    // Handle very large or very small numbers with scientific notation
+    if (Math.abs(num) >= 1e12 || (Math.abs(num) < 1e-6 && num !== 0)) {
+        return num.toExponential(6);
+    }
+    
+    // Format with commas for large numbers
+    if (Math.abs(num) >= 1000 && Number.isInteger(num)) {
+        return num.toLocaleString('en-US');
+    }
+    
+    // For decimal numbers, limit to reasonable precision
+    if (!Number.isInteger(num)) {
+        // Limit to 8 decimal places to prevent overflow
+        const rounded = Math.round(num * 100000000) / 100000000;
+        return rounded.toString();
+    }
+    
+    return value;
+}
+
+// Enhanced update display with formatting and animations
 function updateDisplay() {
     const display = document.querySelector('.display-text');
-    const newValue = calculator.displayValue;
+    const formattedValue = formatDisplayValue(calculator.displayValue);
     
-    if (display.textContent !== newValue) {
-        if (newValue === 'Error') {
+    if (display.textContent !== formattedValue) {
+        if (formattedValue === 'Error') {
             display.classList.add('shake');
             setTimeout(() => {
                 display.classList.remove('shake');
-                display.textContent = newValue;
+                display.textContent = formattedValue;
             }, 250);
         } else {
-            display.textContent = newValue;
+            display.textContent = formattedValue;
         }
     }
 }
