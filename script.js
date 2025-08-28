@@ -192,7 +192,7 @@ function formatDisplayValue(value) {
     }
     
     // Format with commas for large numbers
-    if (Math.abs(num) >= 1000 && Number.isInteger(num)) {
+    if (Math.abs(num) >= 1000) {
         return num.toLocaleString('en-US');
     }
     
