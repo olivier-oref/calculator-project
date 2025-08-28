@@ -1,9 +1,10 @@
 // Calculator State Management
+// This object maintains the current state of the calculator
 const calculator = {
-    displayValue: '0',
-    firstOperand: null,
-    waitingForSecondOperand: false,
-    operator: null
+    displayValue: '0',              // Current number shown on display
+    firstOperand: null,             // First number in an operation (e.g., "5" in "5 + 3")
+    waitingForSecondOperand: false, // Flag to determine if we need the second number
+    operator: null                  // Current operation (+, -, ×, ÷)
 };
 
 // Update display function
@@ -16,19 +17,21 @@ function updateDisplay() {
 function inputDigit(digit) {
     const { displayValue, waitingForSecondOperand } = calculator;
 
+    // If we just performed an operation, start fresh with the new digit
     if (waitingForSecondOperand === true) {
         calculator.displayValue = digit;
         calculator.waitingForSecondOperand = false;
     } else {
-        // Remove commas for digit counting and processing
+        // Remove commas for accurate digit counting and processing
         const rawValue = displayValue.replace(/,/g, '');
         
-        // Limit display to 12 digits (excluding decimal point and minus sign)
+        // Prevent display overflow by limiting to 12 digits (excluding decimal and minus)
         const currentDigits = rawValue.replace(/[^0-9]/g, '').length;
         if (currentDigits >= 12) {
-            return; // Don't add more digits
+            return; // Silently ignore additional digits to prevent overflow
         }
         
+        // Replace initial '0' or append to existing number
         calculator.displayValue = rawValue === '0' ? digit : rawValue + digit;
     }
 }
@@ -179,30 +182,33 @@ function animateDisplayChange(newValue) {
     }, 50);
 }
 
-// Format number with commas and scientific notation
+// Format number with commas and scientific notation for display
 function formatDisplayValue(value) {
+    // Don't format special values
     if (value === 'Error' || value === '0') return value;
     
     const num = parseFloat(value);
     if (isNaN(num)) return value;
     
-    // Handle very large or very small numbers with scientific notation
+    // Use scientific notation for very large/small numbers to prevent display overflow
     if (Math.abs(num) >= 1e12 || (Math.abs(num) < 1e-6 && num !== 0)) {
         return num.toExponential(6);
     }
     
-    // Format with commas for large numbers
+    // Add commas to numbers >= 1000 for better readability
+    // This works for both integers and decimals (e.g., 1234.56 → 1,234.56)
     if (Math.abs(num) >= 1000) {
         return num.toLocaleString('en-US');
     }
     
-    // For decimal numbers, limit to reasonable precision
+    // For smaller decimal numbers, limit precision to prevent display issues
     if (!Number.isInteger(num)) {
-        // Limit to 8 decimal places to prevent overflow
+        // Round to 8 decimal places to avoid floating-point precision errors
         const rounded = Math.round(num * 100000000) / 100000000;
         return rounded.toString();
     }
     
+    // Return the value as-is for small integers
     return value;
 }
 
