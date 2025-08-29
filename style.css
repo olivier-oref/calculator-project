@@ -204,7 +204,7 @@ body {
     visibility: hidden;
 }
 
-/* Base button styles with ripple support */
+/* Base button styles with ripple support and enhanced shadows */
 .button {
     font-family: 'Roboto', sans-serif;
     font-size: var(--md-sys-typescale-title-large);
@@ -221,6 +221,17 @@ body {
     justify-content: center;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    transform-origin: center;
+}
+
+/* Enhanced focus styles for accessibility */
+.button:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+}
+
+.button:focus:not(:focus-visible) {
+    outline: none;
 }
 
 /* Enhanced ripple effect from click point */
